@@ -87,7 +87,7 @@ def listener(message):
     def the_day(value):
         return (now.weekday() + value) % 7
 
-    splited_msg = msg_txt.splitlines()
+    splited_msg = msg_txt.split()
 
     global count
     for i in para_input:
