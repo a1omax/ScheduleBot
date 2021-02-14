@@ -75,7 +75,7 @@ chatId = None
 @bot.message_handler(commands=['help','start', 'para'])
 def first(message):
     first_buttons = telebot.types.ReplyKeyboardMarkup(True, True)
-    first_buttons.row('Какая сейчас пара?', 'Какая сдедующая пара')
+    first_buttons.row('Какая сейчас пара?', 'Какая следующая пара')
     first_buttons.row('Какие пары сегодня?', 'Какие пары завтра?')
     bot.send_message(message.chat.id, 'Что Вы хотите узнать?', reply_markup=first_buttons)
 
