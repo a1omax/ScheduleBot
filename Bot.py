@@ -54,6 +54,7 @@ def para_today_by_arg(key=1):
 def para_by_key_word(day):
     if now.weekday() > day and day >= 0:
         another_week = 1
+        day = day_change(day)
     else:
         day = day_change(day)
         another_week = day // 7
@@ -71,6 +72,13 @@ def para_by_key_word(day):
 
 chatId = None
 
+@bot.message_handler(commands=['help','start', 'para'])
+def first(message):
+    first_buttons = telebot.types.ReplyKeyboardMarkup(True, True)
+    first_buttons.row('Какая сейчас пара?', 'Какая сдедующая пара')
+    first_buttons.row('Какие пары сегодня?', 'Какие пары завтра?')
+    bot.send_message(message.chat.id, 'Что Вы хотите узнать?', reply_markup=first_buttons)
+
 
 def listener(message):
     global now
@@ -87,11 +95,14 @@ def listener(message):
     def the_day(value):
         return (now.weekday() + value) % 7
 
-    splited_msg = msg_txt.split()
+    msg_txt = msg_txt.replace('?', '')
+    msg_txt = msg_txt.replace('!', '')
+
+    split_msg = msg_txt.split()
 
     global count
     for i in para_input:
-        for j in splited_msg:
+        for j in split_msg:
             if i == j:
                 msg_txt = msg_txt.replace(i, '')
                 count = msg_txt.count('после') - msg_txt.count('поза') - msg_txt.count('перед') - msg_txt.count('до')
@@ -161,4 +172,7 @@ def listener(message):
 
 
 bot.set_update_listener(listener)
-bot.polling(none_stop=True)
+try:
+   bot.polling(none_stop=True)
+except:
+   pass
