@@ -105,84 +105,81 @@ def listener(message):
     split_msg = msg_txt.split()
 
     global count
+
     for i in para_input:
         for j in split_msg:
             if i == j:
                 msg_txt = msg_txt.replace(i, '')
-                print(msg_txt)
+
                 count = msg_txt.count('после') - msg_txt.count('поза') - msg_txt.count('перед') - msg_txt.count('до')
 
-                msg_txt = msg_txt.replace('поза', '')
-                msg_txt = msg_txt.replace('перед', '')
-                msg_txt = msg_txt.replace('после', '')
-                msg_txt = msg_txt.replace('до', '')
                 msg_txt = (msg_txt.strip())
-                msg_txt += msg_txt + " "
+                msg_txt += " "
                 print(msg_txt)
 
                 def check():
                     for i in right_now:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("now")
                             day = para_today_by_arg(hours())
                             return day
                     for i in today:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("today")
                             day = para_by_key_word(the_day(0))
                             return day
                     for i in tomorrow:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("tomorrow")
                             day = para_by_key_word(the_day(1))
                             return day
                     for i in yesterday:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("yesterday")
                             day = para_by_key_word(the_day(-1))
                             return day
                     for i in monday:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("mon")
                             day = para_by_key_word(0)
                             return day
                     for i in tuesday:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("tuesday")
                             day = para_by_key_word(1)
                             return day
                     for i in wednesday:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             day = para_by_key_word(2)
                             print("wednesday")
                             return day
                     for i in thursday:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             day = para_by_key_word(3)
                             print("thursday")
                             return day
                     for i in friday:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("friday")
                             day = para_by_key_word(4)
                             return day
                     for i in saturday:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("saturday")
                             day = para_by_key_word(5)
                             return day
                     for i in sunday:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("sunday")
                             day = para_by_key_word(6)
                             return day
                     for i in next:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("next")
                             day = para_today_by_arg(hours() + 1)
                             return day
                     for i in number:
-                        if msg_txt.find(i) != -1:
+                        if i in msg_txt:
                             print("number")
                             day = para_today_by_arg(int(i))
                             return day
