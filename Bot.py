@@ -109,6 +109,7 @@ def listener(message):
         for j in split_msg:
             if i == j:
                 msg_txt = msg_txt.replace(i, '')
+                print(msg_txt)
                 count = msg_txt.count('после') - msg_txt.count('поза') - msg_txt.count('перед') - msg_txt.count('до')
 
                 msg_txt = msg_txt.replace('поза', '')
@@ -116,7 +117,7 @@ def listener(message):
                 msg_txt = msg_txt.replace('после', '')
                 msg_txt = msg_txt.replace('до', '')
                 msg_txt = (msg_txt.strip())
-                split_msg = msg_txt.split()
+                msg_txt += msg_txt + " "
                 print(msg_txt)
 
                 def check():
