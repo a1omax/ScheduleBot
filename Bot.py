@@ -3,7 +3,9 @@ import cfg
 from datetime import datetime
 import telebot
 from arg import *
+from dateutil.tz import tzoffset
 
+timezone = 2
 bot = telebot.TeleBot(cfg.TOKEN)
 
 
@@ -82,7 +84,9 @@ def first(message):
 
 def listener(message):
     global now
-    now = datetime.now()
+
+    offset = tzoffset(None, timezone * 3600)  # offset in seconds
+    now = datetime.now(offset)
 
     msg_txt = ""
     chat_id = ""
@@ -111,63 +115,83 @@ def listener(message):
                 msg_txt = msg_txt.replace('перед', '')
                 msg_txt = msg_txt.replace('после', '')
                 msg_txt = msg_txt.replace('до', '')
-                msg_txt = (msg_txt.strip()).split()
-
+                msg_txt = (msg_txt.strip())
+                split_msg = msg_txt.split()
                 print(msg_txt)
 
-                day = para_today_by_arg(hours())  # по умолчанию
+                def check():
+                    for i in right_now:
+                        if msg_txt.find(i) != -1:
+                            print("now")
+                            day = para_today_by_arg(hours())
+                            return day
+                    for i in today:
+                        if msg_txt.find(i) != -1:
+                            print("today")
+                            day = para_by_key_word(the_day(0))
+                            return day
+                    for i in tomorrow:
+                        if msg_txt.find(i) != -1:
+                            print("tomorrow")
+                            day = para_by_key_word(the_day(1))
+                            return day
+                    for i in yesterday:
+                        if msg_txt.find(i) != -1:
+                            print("yesterday")
+                            day = para_by_key_word(the_day(-1))
+                            return day
+                    for i in monday:
+                        if msg_txt.find(i) != -1:
+                            print("mon")
+                            day = para_by_key_word(0)
+                            return day
+                    for i in tuesday:
+                        if msg_txt.find(i) != -1:
+                            print("tuesday")
+                            day = para_by_key_word(1)
+                            return day
+                    for i in wednesday:
+                        if msg_txt.find(i) != -1:
+                            day = para_by_key_word(2)
+                            print("wednesday")
+                            return day
+                    for i in thursday:
+                        if msg_txt.find(i) != -1:
+                            day = para_by_key_word(3)
+                            print("thursday")
+                            return day
+                    for i in friday:
+                        if msg_txt.find(i) != -1:
+                            print("friday")
+                            day = para_by_key_word(4)
+                            return day
+                    for i in saturday:
+                        if msg_txt.find(i) != -1:
+                            print("saturday")
+                            day = para_by_key_word(5)
+                            return day
+                    for i in sunday:
+                        if msg_txt.find(i) != -1:
+                            print("sunday")
+                            day = para_by_key_word(6)
+                            return day
+                    for i in next:
+                        if msg_txt.find(i) != -1:
+                            print("next")
+                            day = para_today_by_arg(hours() + 1)
+                            return day
+                    for i in number:
+                        if msg_txt.find(i) != -1:
+                            print("number")
+                            day = para_today_by_arg(int(i))
+                            return day
+                    return 0
 
-                for keyWord in msg_txt:
-                    if keyWord in today:
-                        print("today")
-                        day = para_by_key_word(the_day(0))
-                        break
-                    elif keyWord in tomorrow:
-                        print("tomorrow")
-                        day = para_by_key_word(the_day(1))
-                        break
-                    elif keyWord in yesterday:
-                        print("yesterday")
-                        day = para_by_key_word(the_day(-1))
-                        break
-                    elif keyWord in monday:
-                        print("mon")
-                        day = para_by_key_word(0)
-                        break
-                    elif keyWord in tuesday:
-                        print("tuesday")
-                        day = para_by_key_word(1)
-                        break
-                    elif keyWord in wednesday:
-                        day = para_by_key_word(2)
-                        print("wednesday")
-                        break
-                    elif keyWord in thursday:
-                        day = para_by_key_word(3)
-                        print("thursday")
-                        break
-                    elif keyWord in friday:
-                        print("friday")
-                        day = para_by_key_word(4)
-                        break
-                    elif keyWord in saturday:
-                        print("saturday")
-                        day = para_by_key_word(5)
-                        break
-                    elif keyWord in sunday:
-                        print("sunday")
-                        day = para_by_key_word(6)
-                        break
-                    elif keyWord in next:
-                        print("next")
-                        day = para_today_by_arg(hours() + 1)
-                        break
-                    elif keyWord in number:
-                        print("number")
-                        day = para_today_by_arg(int(keyWord))
-                        break
+                send = check()
 
-                bot.send_message(chat_id, str(day))
+                if send != 0:
+                    bot.send_message(chat_id, str(send))
+
                 break
 
 
