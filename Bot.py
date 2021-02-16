@@ -13,9 +13,11 @@ def day_change(arg):
     return arg + count
 
 
-def hours():
-    hour = int(now.strftime("%H"))
+def hours(hour = 0):
+
+    hour = hour + int(now.strftime("%H"))
     minute = int(now.strftime("%M"))
+
     if hour < 9:
         return 0
     elif hour == 9 or (hour == 10 and minute <= 20):
@@ -28,8 +30,11 @@ def hours():
         return 4
     elif (hour == 15 and minute >= 30) or (hour == 16 and minute <= 50):
         return 5
+    elif (hour == 16 and minute > 50) or (hour >=17):
+        return -2
     else:
         return -1
+
 
 
 def week_now(change=0):
@@ -45,26 +50,46 @@ def number_of_para(arg):
     return (week_now().get(now.weekday())).get(arg)
 
 
-def para_today_by_arg(key=1):
-    para = number_of_para(key)
+def para_today_by_arg(key=1,flag = 0):
+    if hours() == -1:
+        key = hours(1)
+        if  key != -1:
+            if flag == 0:
+                return "\nСейчас перемена после пары №" + str(key-1)
+            elif flag > 0:
+                key = key-1
+
+    elif key == 0:
+        if flag <=0:
+            return "Ещё не началась первая пара"
+    elif key == -2:
+        if flag >=0:
+            return "Пары уже закончились"
+        else:
+            key = 6
+
+    numb = key+flag
+
+    para = number_of_para(numb)
+
     if para is not None:
-        return "\nУ первой подгруппы: " + para[0] + "\nУ второй подгруппы: " + para[1]
+        return "\nПара №"+ str(numb) +"\nУ первой подгруппы: " + para[0] + "\nУ второй подгруппы: " + para[1]
     else:
         return "\nУ первой и второй подгруппы сейчас нет пар"
 
 
 def para_by_key_word(day):
-    if now.weekday() > day and day >= 0:
+    if now.weekday() > day >= 0:
         another_week = 1
         day = day_change(day)
     else:
         day = day_change(day)
         another_week = day // 7
 
-    def output(i, day = 0):
-        return str(i) + " пара: " + "\n" + \
-               (week_now(another_week).get(day % 7)).get(i)[0] + "\n" + \
-               (week_now(another_week).get(day % 7)).get(i)[1] + "\n"
+    def output(numb, key=0):
+        return str(numb) + " пара: " + "\n" + \
+               (week_now(another_week).get(key % 7)).get(numb)[0] + "\n" + \
+               (week_now(another_week).get(key % 7)).get(numb)[1] + "\n"
 
     out = "\n"
     for i in range(1, 6):
@@ -74,7 +99,8 @@ def para_by_key_word(day):
 
 chatId = None
 
-@bot.message_handler(commands=['help','start', 'para'])
+
+@bot.message_handler(commands=['help', 'start', 'para'])
 def first(message):
     first_buttons = telebot.types.ReplyKeyboardMarkup(True, True)
     first_buttons.row('Какая сейчас пара?', 'Какая следующая пара')
@@ -83,6 +109,7 @@ def first(message):
 
 
 def listener(message):
+
     global now
 
     offset = tzoffset(None, timezone * 3600)  # offset in seconds
@@ -118,70 +145,75 @@ def listener(message):
                 print(msg_txt)
 
                 def check():
-                    for i in right_now:
-                        if i in msg_txt:
+                    for keyW in right_now:
+                        if keyW in msg_txt:
                             print("now")
                             day = para_today_by_arg(hours())
                             return day
-                    for i in today:
-                        if i in msg_txt:
+                    for keyW in today:
+                        if keyW in msg_txt:
                             print("today")
                             day = para_by_key_word(the_day(0))
                             return day
-                    for i in tomorrow:
-                        if i in msg_txt:
+                    for keyW in tomorrow:
+                        if keyW in msg_txt:
                             print("tomorrow")
                             day = para_by_key_word(the_day(1))
                             return day
-                    for i in yesterday:
-                        if i in msg_txt:
+                    for keyW in yesterday:
+                        if keyW in msg_txt:
                             print("yesterday")
                             day = para_by_key_word(the_day(-1))
                             return day
-                    for i in monday:
-                        if i in msg_txt:
+                    for keyW in monday:
+                        if keyW in msg_txt:
                             print("mon")
                             day = para_by_key_word(0)
                             return day
-                    for i in tuesday:
-                        if i in msg_txt:
+                    for keyW in tuesday:
+                        if keyW in msg_txt:
                             print("tuesday")
                             day = para_by_key_word(1)
                             return day
-                    for i in wednesday:
-                        if i in msg_txt:
+                    for keyW in wednesday:
+                        if keyW in msg_txt:
                             day = para_by_key_word(2)
                             print("wednesday")
                             return day
-                    for i in thursday:
-                        if i in msg_txt:
+                    for keyW in thursday:
+                        if keyW in msg_txt:
                             day = para_by_key_word(3)
                             print("thursday")
                             return day
-                    for i in friday:
-                        if i in msg_txt:
+                    for keyW in friday:
+                        if keyW in msg_txt:
                             print("friday")
                             day = para_by_key_word(4)
                             return day
-                    for i in saturday:
-                        if i in msg_txt:
+                    for keyW in saturday:
+                        if keyW in msg_txt:
                             print("saturday")
                             day = para_by_key_word(5)
                             return day
-                    for i in sunday:
-                        if i in msg_txt:
+                    for keyW in sunday:
+                        if keyW in msg_txt:
                             print("sunday")
                             day = para_by_key_word(6)
                             return day
-                    for i in next:
-                        if i in msg_txt:
+                    for keyW in next:
+                        if keyW in msg_txt:
                             print("next")
-                            day = para_today_by_arg(hours() + 1)
+                            day = para_today_by_arg(hours(),flag = 1)
                             return day
-                    for i in number:
-                        if i in msg_txt:
+                    for keyW in before:
+                        if keyW in msg_txt:
+                            print("before")
+                            day = para_today_by_arg(hours(), flag = -1)
+                            return day
+                    for keyW in number:
+                        if keyW in msg_txt:
                             print("number")
-                            day = para_today_by_arg(int(i))
+                            day = para_today_by_arg(int(keyW))
                             return day
                     return 0
 
@@ -195,6 +227,6 @@ def listener(message):
 
 bot.set_update_listener(listener)
 try:
-   bot.polling(none_stop=True)
+    bot.polling(none_stop=True)
 except:
-   pass
+    pass
