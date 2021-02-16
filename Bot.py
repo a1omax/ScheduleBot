@@ -2,7 +2,7 @@ from schedule import schedule
 import cfg
 from datetime import datetime
 import telebot
-from arg import *
+from arg import * 
 from dateutil.tz import tzoffset
 
 timezone = 2
@@ -118,72 +118,42 @@ def listener(message):
                 print(msg_txt)
 
                 def check():
-                    for i in right_now:
-                        if i in msg_txt:
-                            print("now")
-                            day = para_today_by_arg(hours())
-                            return day
-                    for i in today:
-                        if i in msg_txt:
-                            print("today")
-                            day = para_by_key_word(the_day(0))
-                            return day
-                    for i in tomorrow:
-                        if i in msg_txt:
-                            print("tomorrow")
-                            day = para_by_key_word(the_day(1))
-                            return day
-                    for i in yesterday:
-                        if i in msg_txt:
-                            print("yesterday")
-                            day = para_by_key_word(the_day(-1))
-                            return day
-                    for i in monday:
-                        if i in msg_txt:
-                            print("mon")
-                            day = para_by_key_word(0)
-                            return day
-                    for i in tuesday:
-                        if i in msg_txt:
-                            print("tuesday")
-                            day = para_by_key_word(1)
-                            return day
-                    for i in wednesday:
-                        if i in msg_txt:
-                            day = para_by_key_word(2)
-                            print("wednesday")
-                            return day
-                    for i in thursday:
-                        if i in msg_txt:
-                            day = para_by_key_word(3)
-                            print("thursday")
-                            return day
-                    for i in friday:
-                        if i in msg_txt:
-                            print("friday")
-                            day = para_by_key_word(4)
-                            return day
-                    for i in saturday:
-                        if i in msg_txt:
-                            print("saturday")
-                            day = para_by_key_word(5)
-                            return day
-                    for i in sunday:
-                        if i in msg_txt:
-                            print("sunday")
-                            day = para_by_key_word(6)
-                            return day
-                    for i in next:
-                        if i in msg_txt:
-                            print("next")
-                            day = para_today_by_arg(hours() + 1)
-                            return day
-                    for i in number:
-                        if i in msg_txt:
-                            print("number")
-                            day = para_today_by_arg(int(i))
-                            return day
+                    a = (right_now, today, tomorrow, yesterday, monday, tuesday, wednesday, thursday, friday, saturday, sunday, next, number)
+                    for i in a:
+                        for x in i:
+                            if x in msg_txt:
+                                print(i)
+                                argument = 0
+                                if i == right_now:
+                                    argument = hours()
+                                elif i == today:
+                                    argument == the_day(0)
+                                elif i == tomorrow:
+                                    argument = the_day(1)
+                                elif i == yesterday:
+                                    argument = the_day(-1)
+                                elif i == monday:
+                                    argument = 0
+                                elif i == tuesday:
+                                    argument = 1
+                                elif i == wednesday:
+                                    argument = 2
+                                elif i == thursday:
+                                    argument = 3
+                                elif i == friday:
+                                    argument = 4
+                                elif i == saturday:
+                                    argument = 5
+                                elif i == sunday:
+                                    argument = 6
+                                elif i == next:
+                                    argument = hours() + 1
+                                elif i == number:
+                                    argument = int(x)
+                                day = para_today_by_arg(argument)
+                                return day
                     return 0
+
 
                 send = check()
 
