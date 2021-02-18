@@ -6,6 +6,14 @@ from arg import *
 from dateutil.tz import tzoffset
 
 timezone = 2
+offset = tzoffset(None, timezone * 3600)  # offset in seconds
+def time_update():
+    global now,hour,minute
+    now = datetime.now(offset)
+    hour =  17#int(now.strftime("%H"))
+    minute =  55#int(now.strftime("%M"))
+
+
 bot = telebot.TeleBot(cfg.TOKEN)
 
 
@@ -13,11 +21,8 @@ def day_change(arg):
     return arg + count
 
 
-def hours(hour = 0):
-
-    hour = hour + int(now.strftime("%H"))
-    minute = int(now.strftime("%M"))
-
+def hours_para():
+    
     if hour < 9:
         return 0
     elif hour == 9 or (hour == 10 and minute <= 20):
@@ -31,10 +36,18 @@ def hours(hour = 0):
     elif (hour == 15 and minute >= 30) or (hour == 16 and minute <= 50):
         return 5
     elif (hour == 16 and minute > 50) or (hour >=17):
-        return -2
-    else:
-        return -1
+        return 6
 
+
+def hours_break():
+    if hour == 10 and (30 > minute > 20):
+        return 1
+    elif (hour == 11 and minute > 50) or (hour == 12 and minute <30):
+        return 2
+    elif hour == 13 and minute > 50:
+        return 3
+    elif hour == 15 and (30 > minute > 20):
+        return 4
 
 
 def week_now(change=0):
@@ -50,32 +63,29 @@ def number_of_para(arg):
     return (week_now().get(now.weekday())).get(arg)
 
 
-def para_today_by_arg(key=1,flag = 0):
-    if hours() == -1:
-        key = hours(1)
-        if  key != -1:
-            if flag == 0:
-                return "\nСейчас перемена после пары №" + str(key-1)
-            elif flag > 0:
-                key = key-1
+def para_today_by_arg(key=0):
 
-    elif key == 0:
-        if flag <=0:
-            return "Ещё не началась первая пара"
-    elif key == -2:
-        if flag >=0:
-            return "Пары уже закончились"
-        else:
-            key = 6
-
-    numb = key+flag
-
-    para = number_of_para(numb)
-
-    if para is not None:
-        return "\nПара №"+ str(numb) +"\nУ первой подгруппы: " + para[0] + "\nУ второй подгруппы: " + para[1]
+    para_numb = hours_para()
+    if para_numb is not None:
+        numb = key + para_numb
     else:
-        return "\nУ первой и второй подгруппы сейчас нет пар"
+        break_numb = hours_break()
+        if key == 0:
+            return "Сейчас перемена после пары №" + str(break_numb)
+        elif key > 0:
+            numb = break_numb + key
+        else:
+            numb = break_numb + key + 1
+    if numb <= 0:
+        return "Пары ещё не начались"
+    elif numb <= 5:
+        para = number_of_para(numb)
+        if para is not None:
+            return "\nПара №" + str(numb) + "\nУ первой подгруппы: " + para[0] + "\nУ второй подгруппы: " + para[1]
+        else:
+            return "\nУ первой и второй подгруппы сейчас нет пар"
+    elif numb >= 6:
+        return "Пары уже закончились"
 
 
 def para_by_key_word(day):
@@ -103,17 +113,15 @@ chatId = None
 @bot.message_handler(commands=['help', 'start', 'para'])
 def first(message):
     first_buttons = telebot.types.ReplyKeyboardMarkup(True, True)
-    first_buttons.row('Какая сейчас пара?', 'Какая следующая пара')
-    first_buttons.row('Какие пары сегодня?', 'Какие пары завтра?')
+    first_buttons.row('Какая сейчас пара?', 'Какая следующая пара', 'Какая прошлая пара')
+    #first_buttons.row('Какие пары сегодня?', 'Какие пары завтра?')
     bot.send_message(message.chat.id, 'Что Вы хотите узнать?', reply_markup=first_buttons)
 
 
 def listener(message):
+    time_update()
 
-    global now
 
-    offset = tzoffset(None, timezone * 3600)  # offset in seconds
-    now = datetime.now(offset)
 
     msg_txt = ""
     chat_id = ""
@@ -145,11 +153,6 @@ def listener(message):
                 print(msg_txt)
 
                 def check():
-                    for keyW in right_now:
-                        if keyW in msg_txt:
-                            print("now")
-                            day = para_today_by_arg(hours())
-                            return day
                     for keyW in today:
                         if keyW in msg_txt:
                             print("today")
@@ -200,15 +203,20 @@ def listener(message):
                             print("sunday")
                             day = para_by_key_word(6)
                             return day
+                    for keyW in right_now:
+                        if keyW in msg_txt:
+                            print("now")
+                            day = para_today_by_arg(0)
+                            return day
                     for keyW in next:
                         if keyW in msg_txt:
                             print("next")
-                            day = para_today_by_arg(hours(),flag = 1)
+                            day = para_today_by_arg(1)
                             return day
                     for keyW in before:
                         if keyW in msg_txt:
                             print("before")
-                            day = para_today_by_arg(hours(), flag = -1)
+                            day = para_today_by_arg(-1 )
                             return day
                     for keyW in number:
                         if keyW in msg_txt:
