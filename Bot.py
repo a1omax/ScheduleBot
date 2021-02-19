@@ -10,8 +10,8 @@ offset = tzoffset(None, timezone * 3600)  # offset in seconds
 def time_update():
     global now,hour,minute
     now = datetime.now(offset)
-    hour =  17#int(now.strftime("%H"))
-    minute =  55#int(now.strftime("%M"))
+    hour =  int(now.strftime("%H"))
+    minute =  int(now.strftime("%M"))
 
 
 bot = telebot.TeleBot(cfg.TOKEN)
