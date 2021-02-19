@@ -5,9 +5,10 @@ import telebot
 from arg import *
 from dateutil.tz import tzoffset
 
-timezone = 2
-offset = tzoffset(None, timezone * 3600)  # offset in seconds
+
 def time_update():
+    timezone = 2
+    offset = tzoffset(None, timezone * 3600)  # offset in seconds
     global now,hour,minute
     now = datetime.now(offset)
     hour =  int(now.strftime("%H"))
