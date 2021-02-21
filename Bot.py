@@ -12,8 +12,8 @@ offset = tzoffset(None, timezone * 3600)  # offset in seconds
 def time_update():
     global now,hour,minute
     now = datetime.now(offset)
-    hour =  int(now.strftime("%H"))
-    minute =  int(now.strftime("%M"))
+    hour = int(now.strftime("%H"))
+    minute = int(now.strftime("%M"))
 
 
 bot = telebot.TeleBot(cfg.TOKEN)
@@ -23,33 +23,36 @@ def day_change(arg):
     return arg + count
 
 
+
 def hours_para():
-    
-    if hour < 9:
-        return 0
-    elif hour == 9 or (hour == 10 and minute <= 20):
-        return 1
-    elif (hour == 10 and minute >= 30) or (hour == 11 and minute <= 50):
-        return 2
-    elif (hour == 12 and minute >= 30) or (hour == 13 and minute <= 50):
-        return 3
-    elif hour == 14 or (hour == 15 and minute <= 20):
-        return 4
-    elif (hour == 15 and minute >= 30) or (hour == 16 and minute <= 50):
-        return 5
-    elif (hour == 16 and minute > 50) or (hour >=17):
-        return 6
+
+    h1 = [[9, 0], [10, 30], [12, 30], [14, 0], [15, 30], [16, 50]]
+    h2 = [[10, 20], [11, 50], [13, 50], [15, 20], [16, 50], [17, 0]]
+
+    if hour < h1[0][0]:
+        return 0, (h1[0][0] - hour)*60+h1[0][1]-minute
+
+    for i in range(0, 5):
+        left = (h2[i][0] - hour)*60+h2[i][1]-minute
+        if left >= 0:
+            if left >80:
+                break
+            print('here1')
+            return i+1, left
+    if (hour == h1[5][0] and minute > h1[4][1]) or (hour >= h2[5][0]):
+        return 6, None
+    else:
+        return None,None
 
 
 def hours_break():
-    if hour == 10 and (30 > minute > 20):
-        return 1
-    elif (hour == 11 and minute > 50) or (hour == 12 and minute <30):
-        return 2
-    elif hour == 13 and minute > 50:
-        return 3
-    elif hour == 15 and (30 > minute > 20):
-        return 4
+    h1 = [[10, 20], [11, 50], [13, 50], [15, 20]]
+    h2 = [[10, 30], [12, 30], [14, 0], [15, 30]]
+    for i in range(0, 4):
+        left = (h2[i][0] - hour) * 60 + h2[i][1] - minute
+        if left >= 0:
+            print('here2')
+            return i + 1, left
 
 
 def week_now(change=0):
@@ -66,23 +69,27 @@ def number_of_para(arg):
 
 
 def para_today_by_arg(key=0):
-    para_numb = hours_para()
+
+    para_numb, left = hours_para()
+    print(para_numb)
     if para_numb is not None:
         numb = key + para_numb
     else:
-        break_numb = hours_break()
+        break_numb, left = hours_break()
         if key == 0:
-            return "Сейчас перемена после пары №" + str(break_numb)
+            return "Сейчас перемена после пары №" + str(break_numb) + "\nДо следующей пары осталось: " + str(left) + \
+                   " минут"
         elif key > 0:
             numb = break_numb + key
         else:
             numb = break_numb + key + 1
     if numb <= 0:
-        return "Пары ещё не начались"
+        return "Пары ещё не начались" + "\nДо первой пары: "+str(left) + " минут"
     elif numb <= 5:
         para = number_of_para(numb)
         if para is not None:
-            return "\nПара №" + str(numb) + "\nУ первой подгруппы: " + para[0] + "\nУ второй подгруппы: " + para[1]
+            return "\nПара №" + str(numb) + "\nУ первой подгруппы: " + para[0] + "\nУ второй подгруппы: " + para[1] + \
+                   "\nДо конца пары: " + str(left) + " минут"
         else:
             return "\nУ первой и второй подгруппы сейчас нет пар"
     elif numb >= 6:
@@ -163,7 +170,7 @@ def listener(message):
                     while i<12:
                         for slovo in arg[i]:
                             if slovo in msg_txt:
-                                print(slovo)
+
                                 if i <= 1:
                                     return para_by_key_word(the_day(i))
                                 elif i <= 8:
