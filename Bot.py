@@ -5,11 +5,12 @@ import telebot
 from arg import *
 from dateutil.tz import tzoffset
 
-timezone = 2
-offset = tzoffset(None, timezone * 3600)  # offset in seconds
+
 
 
 def time_update():
+    timezone = 2
+    offset = tzoffset(None, timezone * 3600)  # offset in seconds
     global now,hour,minute
     now = datetime.now(offset)
     hour = int(now.strftime("%H"))
@@ -37,7 +38,6 @@ def hours_para():
         if left >= 0:
             if left >80:
                 break
-            print('here1')
             return i+1, left
     if (hour == h1[5][0] and minute > h1[4][1]) or (hour >= h2[5][0]):
         return 6, None
@@ -51,7 +51,6 @@ def hours_break():
     for i in range(0, 4):
         left = (h2[i][0] - hour) * 60 + h2[i][1] - minute
         if left >= 0:
-            print('here2')
             return i + 1, left
 
 
@@ -71,7 +70,7 @@ def number_of_para(arg):
 def para_today_by_arg(key=0):
 
     para_numb, left = hours_para()
-    print(para_numb)
+=
     if para_numb is not None:
         numb = key + para_numb
     else:
@@ -163,7 +162,6 @@ def listener(message):
 
                 msg_txt = (msg_txt.strip())
                 msg_txt += " "
-                print(msg_txt)
 
                 def check():
                     i=-1
