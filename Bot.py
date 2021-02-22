@@ -68,7 +68,7 @@ def number_of_para(arg):
 def para_today_by_arg(key=0):
 
     para_numb, left = hours_para()
-=
+
     if para_numb is not None:
         numb = key + para_numb
     else:
